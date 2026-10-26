@@ -1,0 +1,85 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --background: #f7f8fb;
+  --foreground: #111827;
+  --card: #ffffff;
+  --muted: #eef1f6;
+  --muted-foreground: #64748b;
+  --border: #e2e8f0;
+  --primary: #4f46e5;
+  --primary-foreground: #ffffff;
+}
+
+.dark {
+  --background: #090d16;
+  --foreground: #f8fafc;
+  --card: #111827;
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
+  --border: #243244;
+  --primary: #818cf8;
+  --primary-foreground: #0f172a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.card {
+  border: 1px solid var(--border);
+  background: var(--card);
+  border-radius: 18px;
+}
+
+.muted {
+  color: var(--muted-foreground);
+}
+
+.dark .text-slate-900 {
+  color: #f8fafc !important;
+}
+
+.surface {
+  background: var(--card);
+  border: 1px solid var(--border);
+}
+
+/* Keep text readable on dark UI surfaces and buttons. */
+.bg-black,
+.bg-black *,
+.bg-slate-800,
+.bg-slate-800 *,
+.bg-slate-900,
+.bg-slate-900 *,
+.bg-slate-950,
+.bg-slate-950 *,
+.bg-indigo-950,
+.bg-indigo-950 * {
+  color: #ffffff !important;
+}
