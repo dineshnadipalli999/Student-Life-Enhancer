@@ -1,0 +1,25 @@
+career,skill,weight
+Full Stack Developer,JavaScript,1.0
+Full Stack Developer,React,0.9
+Full Stack Developer,Node.js,1.0
+Full Stack Developer,SQL,0.8
+Full Stack Developer,REST APIs,0.9
+Full Stack Developer,Docker,0.5
+Data Analyst,Python,1.0
+Data Analyst,SQL,1.0
+Data Analyst,Statistics,0.9
+Data Analyst,Power BI,0.8
+Data Analyst,Machine Learning,0.5
+Backend Developer,Node.js,1.0
+Backend Developer,Express,0.9
+Backend Developer,SQL,0.8
+Backend Developer,REST APIs,1.0
+Backend Developer,Docker,0.6
+AI Engineer,Python,1.0
+AI Engineer,Machine Learning,1.0
+AI Engineer,Statistics,0.8
+AI Engineer,SQL,0.5
+Cloud Engineer,Docker,0.9
+Cloud Engineer,Cloud,1.0
+Cloud Engineer,Linux,0.8
+Cloud Engineer,Python,0.6

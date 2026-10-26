@@ -1,0 +1,296 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  STUDENT
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum ApplicationStatus {
+  SAVED
+  APPLIED
+  SCREENING
+  INTERVIEW
+  SELECTED
+  REJECTED
+}
+
+enum OpportunityType {
+  JOB
+  INTERNSHIP
+  PART_TIME
+}
+
+model User {
+  id            String           @id @default(cuid())
+  name          String
+  email         String           @unique
+  passwordHash  String?
+  role          Role             @default(STUDENT)
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  profile       StudentProfile?
+  resumes       Resume[]
+  applications  Application[]
+  progress      Progress[]
+  roadmaps      Roadmap[]
+  notifications Notification[]
+  conversations AIConversation[]
+  careerMatches CareerMatch[]
+  projects      Project[]
+  courseProgress CourseProgress[]
+}
+
+model StudentProfile {
+  id             String         @id @default(cuid())
+  userId         String         @unique
+  phone          String?
+  location       String?
+  college        String?
+  degree         String?
+  branch         String?
+  graduationYear Int?
+  bio            String?
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  education      Education[]
+  skills         StudentSkill[]
+}
+
+model Education {
+  id          String         @id @default(cuid())
+  profileId   String
+  institution String
+  degree      String?
+  field       String?
+  startYear   Int?
+  endYear     Int?
+  profile     StudentProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+}
+
+model Skill {
+  id          String         @id @default(cuid())
+  name        String         @unique
+  description String?
+  students    StudentSkill[]
+  careers     CareerSkill[]
+}
+
+model StudentSkill {
+  id        String         @id @default(cuid())
+  profileId String
+  skillId   String
+  level     Int            @default(0)
+  profile   StudentProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  skill     Skill          @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@unique([profileId, skillId])
+}
+
+model Career {
+  id          String        @id @default(cuid())
+  title       String
+  description String?
+  category    String?
+  demand      String?
+  url         String?
+  skills      CareerSkill[]
+  matches     CareerMatch[]
+}
+
+model CareerSkill {
+  id         String @id @default(cuid())
+  careerId   String
+  skillId    String
+  importance Int    @default(1)
+  career     Career @relation(fields: [careerId], references: [id], onDelete: Cascade)
+  skill      Skill  @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@unique([careerId, skillId])
+}
+
+model CareerMatch {
+  id       String @id @default(cuid())
+  userId   String
+  careerId String
+  score    Float
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  career   Career @relation(fields: [careerId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, careerId])
+}
+
+model Resume {
+  id        String   @id @default(cuid())
+  userId    String
+  targetRole String
+  fileUrl   String?
+  fileName  String?
+  score     Float?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Course {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  provider    String?
+  url         String?
+  level       String?
+  duration    String?
+  skills      String?
+  createdAt   DateTime @default(now())
+  progress    CourseProgress[]
+}
+
+model CourseProgress {
+  id          String   @id @default(cuid())
+  userId      String
+  courseId    String
+  completed   Boolean  @default(false)
+  completedAt DateTime?
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  ownerId     String?
+  title       String
+  description String?
+  difficulty  String?
+  skills      String?
+  url         String?
+  createdAt   DateTime @default(now())
+  owner       User?    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+}
+
+model Opportunity {
+  id           String          @id @default(cuid())
+  title        String
+  company      String?
+  description  String?
+  location     String?
+  type         OpportunityType
+  url          String?
+  skills       String?
+  createdAt    DateTime        @default(now())
+  applications Application[]
+}
+
+model Scholarship {
+  id          String    @id @default(cuid())
+  title       String
+  provider    String?
+  description String?
+  amount      String?
+  eligibility String?
+  url         String?
+  deadline    DateTime?
+  createdAt   DateTime  @default(now())
+}
+
+model Application {
+  id            String            @id @default(cuid())
+  userId        String
+  opportunityId String
+  status        ApplicationStatus @default(SAVED)
+  appliedAt     DateTime?
+  notes         String?
+  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  opportunity   Opportunity       @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, opportunityId])
+}
+
+model Roadmap {
+  id        String        @id @default(cuid())
+  userId    String
+  title     String
+  createdAt DateTime      @default(now())
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     RoadmapItem[]
+}
+
+model RoadmapItem {
+  id        String  @id @default(cuid())
+  roadmapId String
+  title     String
+  type      String?
+  completed Boolean @default(false)
+  roadmap   Roadmap @relation(fields: [roadmapId], references: [id], onDelete: Cascade)
+}
+
+model Progress {
+  id        String   @id @default(cuid())
+  userId    String
+  metric    String
+  value     Float
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model AIConversation {
+  id        String      @id @default(cuid())
+  userId    String
+  title     String?
+  createdAt DateTime    @default(now())
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages  AIMessage[]
+}
+
+model AIMessage {
+  id             String         @id @default(cuid())
+  conversationId String
+  role           String
+  content        String
+  createdAt      DateTime       @default(now())
+  conversation   AIConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+}
+
+model MarketTrend {
+  id          String   @id @default(cuid())
+  career      String
+  skill       String?
+  demand      String?
+  growth      Float?
+  description String?
+  createdAt   DateTime @default(now())
+}
+
+model Approval {
+  id          String   @id @default(cuid())
+  type        String
+  referenceId String
+  status      String
+  reviewedBy  String?
+  createdAt   DateTime @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String
+  entity    String?
+  entityId  String?
+  createdAt DateTime @default(now())
+}
